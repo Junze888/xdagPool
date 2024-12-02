@@ -70,8 +70,11 @@ func transfer2chunk(miners []string, remark string, amounts []int64) (txHash str
 	if len(miners) != len(amounts) || len(miners) > 10 || (len(miners) == 10 && len(remark) > 0) {
 		return "", errors.New("transfer chunck size error")
 	}
-
-	txHash, err = TransferChunkRpc(amounts, Cfg.Address, miners, remark, BipKey)
+	txNonce, err := getTxNonce(Cfg.Address)
+	if err != nil {
+		return "", err
+	}
+	txHash, err = TransferChunkRpc(amounts, Cfg.Address, miners, remark, BipKey, txNonce)
 	return
 	// fmt.Println(amount, Cfg.Address, miner, remark)
 	// return getUuid(), nil

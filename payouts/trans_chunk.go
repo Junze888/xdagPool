@@ -14,9 +14,9 @@ import (
 )
 
 // batch transfer awards to miners
-func TransferChunkRpc(amount []int64, from string, to []string, remark string, key *secp256k1.PrivateKey) (string, error) {
+func TransferChunkRpc(amount []int64, from string, to []string, remark string, key *secp256k1.PrivateKey, txNonce uint64) (string, error) {
 
-	blockHexStr, total := TransactionChunkBlock(from, to, remark, amount, key)
+	blockHexStr, total := TransactionChunkBlock(from, to, remark, amount, key, txNonce)
 	util.Debug.Println(blockHexStr)
 	if blockHexStr == "" {
 		return "", errors.New("chunk create transaction block error")
@@ -47,7 +47,7 @@ func TransferChunkRpc(amount []int64, from string, to []string, remark string, k
 }
 
 // batch transactions block
-func TransactionChunkBlock(from string, to []string, remark string, value []int64, key *secp256k1.PrivateKey) (string, int64) {
+func TransactionChunkBlock(from string, to []string, remark string, value []int64, key *secp256k1.PrivateKey, txNonce uint64) (string, int64) {
 	if key == nil {
 		util.Error.Println("transaction default key error")
 		return "", 0
@@ -125,7 +125,10 @@ func TransactionChunkBlock(from string, to []string, remark string, value []int6
 	sb.WriteString("0000000000000000")
 
 	// tranx_nonce
-	sb.WriteString("0000000000000000000000000000000000000000000000000000000000000000")
+	sb.WriteString("000000000000000000000000000000000000000000000000")
+	var nonceByte []byte
+	binary.LittleEndian.PutUint64(nonceByte, txNonce)
+	sb.WriteString(hex.EncodeToString(nonceByte))
 
 	// input field: input address
 	sb.WriteString(inAddress)
