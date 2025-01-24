@@ -126,9 +126,9 @@ func TransactionChunkBlock(from string, to []string, remark string, value []int6
 
 	// tranx_nonce
 	sb.WriteString("000000000000000000000000000000000000000000000000")
-	var nonceByte []byte
+	var nonceByte [8]byte
 	binary.LittleEndian.PutUint64(nonceByte[:], txNonce)
-	sb.WriteString(hex.EncodeToString(nonceByte))
+	sb.WriteString(hex.EncodeToString(nonceByte[:]))
 
 	// input field: input address
 	sb.WriteString(inAddress)
